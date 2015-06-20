@@ -6,32 +6,12 @@ import (
   "text/scanner"
   "os"
   "strings"
+  "github.com/pocke/tseitin/ast"
 )
 
-type Expression interface{}
-
 type Token struct {
-  token int
-  literal string
-}
-
-type Literal struct {
-  literal string
-}
-
-type NotOpExpr struct {
-	operator rune
-	right Expression
-}
-
-type BinOpExpr struct {
-  left Expression
-  operator rune
-  right Expression
-}
-
-type ParenExpr struct {
-	subExpr Expression
+	Token   int
+	Literal string
 }
 
 %}
@@ -39,7 +19,7 @@ type ParenExpr struct {
 
 %union{
   token Token
-  expr Expression
+  expr ast.Expression
 }
 
 %type<expr> program
@@ -61,7 +41,7 @@ program
 expr
 	: LITERAL
 	{
-		$$ = Literal{literal: $1.literal}
+		$$ = ast.Literal{Literal: $1.Literal}
 	}
 	| and_expr
 	| or_expr
@@ -71,32 +51,32 @@ expr
 and_expr
 	: expr '&' expr
 	{
-		$$ = BinOpExpr{left: $1, operator: '&', right: $3}
+		$$ = ast.BinOpExpr{Left: $1, Operator: '&', Right: $3}
 	}
 
 or_expr
 	: expr '|' expr
 	{
-		$$ = BinOpExpr{left: $1, operator: '|', right: $3}
+		$$ = ast.BinOpExpr{Left: $1, Operator: '|', Right: $3}
 	}
 
 not_expr
 	: '!' expr
 	{
-		$$ = NotOpExpr{operator: '!', right: $2}
+		$$ = ast.NotOpExpr{Operator: '!', Right: $2}
 	}
 
 paren_expr
 	: '(' expr ')'
 	{
-		$$ = ParenExpr{subExpr: $2}
+		$$ = ast.ParenExpr{SubExpr: $2}
 	}
 
 %%
 
 type Lexer struct {
 	scanner.Scanner
-	result Expression
+	result ast.Expression
 }
 
 func (l *Lexer) Lex(lval *yySymType) int {
@@ -104,7 +84,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 	if token == scanner.Ident {
 		token = LITERAL
 	}
-	lval.token = Token{token: token, literal: l.TokenText()}
+	lval.token = Token{Token: token, Literal: l.TokenText()}
 	return token
 }
 
