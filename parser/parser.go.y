@@ -65,7 +65,7 @@ not_expr
 paren_expr
 	: '(' expr ')'
 	{
-		$$ = ast.ParenExpr{SubExpr: $2}
+		$$ = $2
 	}
 
 %%

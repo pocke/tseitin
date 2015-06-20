@@ -16,7 +16,3 @@ type BinOpExpr struct {
 	Operator rune
 	Right    Expression
 }
-
-type ParenExpr struct {
-	SubExpr Expression
-}
