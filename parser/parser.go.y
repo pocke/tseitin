@@ -1,5 +1,5 @@
 %{
-package main
+package parser
 
 import (
   "github.com/pocke/tseitin/ast"

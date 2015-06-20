@@ -1,9 +1,7 @@
-package main
+package parser
 
 import (
-	"fmt"
-	"os"
-	"strings"
+	"io"
 	"text/scanner"
 
 	"github.com/pocke/tseitin/ast"
@@ -27,9 +25,9 @@ func (l *Lexer) Error(e string) {
 	panic(e)
 }
 
-func main() {
+func Parse(r io.Reader) ast.Expression {
 	l := new(Lexer)
-	l.Init(strings.NewReader(os.Args[1]))
+	l.Init(r)
 	yyParse(l)
-	fmt.Printf("%#v\n", l.result)
+	return l.result
 }
