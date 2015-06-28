@@ -1,30 +1,10 @@
 package eval
 
-import (
-	"fmt"
-	"strings"
-
-	"github.com/pocke/tseitin/ast"
-)
+import "github.com/pocke/tseitin/ast"
 
 type Evaluator struct {
 	x string
 }
-
-type Var struct {
-	Sign    bool
-	Literal string
-}
-
-func (v Var) String() string {
-	ret := ""
-	if !v.Sign {
-		ret += "!"
-	}
-	return ret + v.Literal
-}
-
-type Expr [][]Var
 
 func New() *Evaluator {
 	return &Evaluator{x: "A"}
@@ -33,20 +13,6 @@ func New() *Evaluator {
 func (ev *Evaluator) Evaluate(a ast.Expression) Expr {
 	ret, _ := ev.eval(a)
 	return ret
-}
-
-func (e Expr) String() string {
-	ret := make([]string, 0, len(e))
-	for _, v := range e {
-		sslice := make([]string, 0, len(v))
-		for _, x := range v {
-			sslice = append(sslice, x.String())
-		}
-		s := strings.Join(sslice, "|")
-		ret = append(ret, fmt.Sprintf("(%s)", s))
-	}
-
-	return strings.Join(ret, "&")
 }
 
 func (ev *Evaluator) eval(a ast.Expression) (Expr, string) {
