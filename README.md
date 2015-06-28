@@ -1,7 +1,7 @@
 tseitin
 ===========
 
-A tseitin encoder.
+A tseitin encoder, and solve satisfactory problem.
 
 Learning tseitin and yacc.
 
@@ -25,6 +25,7 @@ Usage
 ```sh
 $ tseitin '(a&b&!c)|(!a&b&c)'
 # => (!D|!a)&(D|a)&(!C|b)&(!C|D)&(!b|!D|C)&(!B|c)&(!B|C)&(!c|!C|B)&(!F|!c)&(F|c)&(!G|b)&(!G|a)&(!b|!a|G)&(!E|F)&(!E|G)&(!F|!G|E)&(!B|A)&(!E|A)&(!A|B|E)
+#    true map[b:true a:true c:false]
 ```
 
 Refs
