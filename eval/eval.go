@@ -2,6 +2,7 @@ package eval
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/pocke/tseitin/ast"
 )
@@ -10,26 +11,55 @@ type Evaluator struct {
 	x string
 }
 
+type Var struct {
+	Sign    bool
+	Literal string
+}
+
+func (v Var) String() string {
+	ret := ""
+	if !v.Sign {
+		ret += "!"
+	}
+	return ret + v.Literal
+}
+
+type Expr [][]Var
+
 func New() *Evaluator {
 	return &Evaluator{x: "A"}
 }
 
-func (ev *Evaluator) Evaluate(a ast.Expression) []string {
-	res, _ := ev.eval(a)
-	return res
+func (ev *Evaluator) Evaluate(a ast.Expression) Expr {
+	ret, _ := ev.eval(a)
+	return ret
 }
 
-func (ev *Evaluator) eval(a ast.Expression) ([]string, string) {
+func (e Expr) String() string {
+	ret := make([]string, 0, len(e))
+	for _, v := range e {
+		sslice := make([]string, 0, len(v))
+		for _, x := range v {
+			sslice = append(sslice, x.String())
+		}
+		s := strings.Join(sslice, "|")
+		ret = append(ret, fmt.Sprintf("(%s)", s))
+	}
+
+	return strings.Join(ret, "&")
+}
+
+func (ev *Evaluator) eval(a ast.Expression) (Expr, string) {
 	switch e := a.(type) {
 	case ast.Literal:
-		return []string{}, e.Literal
+		return Expr{}, e.Literal
 
 	case ast.NotOpExpr:
 		x := ev.Succ()
 		res, y := ev.eval(e.Right)
 		return append(res,
-			fmt.Sprintf("!%s|!%s", x, y),
-			fmt.Sprintf("%s|%s", x, y),
+			[]Var{{Sign: false, Literal: x}, {Sign: false, Literal: y}},
+			[]Var{{Sign: true, Literal: x}, {Sign: true, Literal: y}},
 		), x
 
 	case ast.BinOpExpr:
@@ -41,15 +71,15 @@ func (ev *Evaluator) eval(a ast.Expression) ([]string, string) {
 		switch e.Operator {
 		case '|':
 			return append(res,
-				fmt.Sprintf("!%s|%s", y, x),
-				fmt.Sprintf("!%s|%s", z, x),
-				fmt.Sprintf("!%s|%s|%s", x, y, z),
+				[]Var{{Sign: false, Literal: y}, {Sign: true, Literal: x}},
+				[]Var{{Sign: false, Literal: z}, {Sign: true, Literal: x}},
+				[]Var{{Sign: false, Literal: x}, {Sign: true, Literal: y}, {Sign: true, Literal: z}},
 			), x
 		case '&':
 			return append(res,
-				fmt.Sprintf("!%s|%s", x, y),
-				fmt.Sprintf("!%s|%s", x, z),
-				fmt.Sprintf("!%s|!%s|%s", y, z, x),
+				[]Var{{Sign: false, Literal: x}, {Sign: true, Literal: y}},
+				[]Var{{Sign: false, Literal: x}, {Sign: true, Literal: z}},
+				[]Var{{Sign: false, Literal: y}, {Sign: false, Literal: z}, {Sign: true, Literal: x}},
 			), x
 		default:
 			panic("")

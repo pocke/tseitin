@@ -15,12 +15,5 @@ func main() {
 	ev := eval.New()
 	tseitin := ev.Evaluate(res)
 
-	s := ""
-	for _, v := range tseitin {
-		s += "(" + v + ")&"
-	}
-
-	b := []byte(s)
-	s = string(b[:len(b)-1])
-	fmt.Println(s)
+	fmt.Println(tseitin.String())
 }
