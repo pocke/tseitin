@@ -11,7 +11,8 @@ func New() *Evaluator {
 }
 
 func (ev *Evaluator) Evaluate(a ast.Expression) Expr {
-	ret, _ := ev.eval(a)
+	ret, y := ev.eval(a)
+	ret = append(ret, []Var{{Sign: true, Literal: y}})
 	return ret
 }
 
