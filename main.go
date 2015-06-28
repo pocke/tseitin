@@ -16,4 +16,5 @@ func main() {
 	tseitin := ev.Evaluate(res)
 
 	fmt.Println(tseitin.String())
+	fmt.Println(tseitin.Solve())
 }
